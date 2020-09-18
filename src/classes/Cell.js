@@ -169,6 +169,10 @@ class World {
       }
     }
   }
+
+  flip(row,col) {
+    this.cells[row][col].flip();
+  }
 }
 
 export {Cell, World};
