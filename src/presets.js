@@ -1,0 +1,15 @@
+let p = [];
+
+p[0] = `
+  OOXXOOOOOO.
+  XOOXOOOOOO.
+  XXOXOXXOOO.
+  OXOXOOXOOO.
+  OXOOOOXOXX.
+  OOXXXOXOXX.
+  OOOOOXOOOO.
+  OOOOXOOOOO.
+  OOOOXXOOOO
+`;
+
+export {p};

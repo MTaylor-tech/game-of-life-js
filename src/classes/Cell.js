@@ -62,7 +62,13 @@ class Cell {
   }
 
   update() {
-    this.alive = this.next_round_alive;
+    if (this.alive !== this.next_round_alive) {
+        this.alive = this.next_round_alive;
+        this.world.didChange = true;
+    }
+    if (this.alive) {
+      this.world.anyLiving = true;
+    }
   }
 
   flip() {
@@ -79,6 +85,8 @@ class World {
     this.cells = [];
     this.generation = 0;
     this.fill();
+    this.anyLiving = false;
+    this.didChange = false;
   }
 
   fill() {
@@ -140,6 +148,8 @@ class World {
   }
 
   run(num_rounds=1) {
+    this.anyLiving = false;
+    this.didChange = false;
     this.show();
     for (let i=0;i<num_rounds;i++) {
       this.prepare();
@@ -172,6 +182,24 @@ class World {
 
   flip(row,col) {
     this.cells[row][col].flip();
+  }
+
+  preset(p,row,col) {
+    const startc = col;
+    console.log(`preset('${p}',${row},${col})`);
+    for (let i=0; i<p.length; i++) {
+      const ch = p.charAt(i);
+      console.log(`charAt(${i})===${ch}`);
+      if (ch==='X') {
+        this.cells[row][col].alive=true;
+        col++;
+      } else if (ch==='O') {
+        col++;
+      } else if (ch==='.') {
+        row++;
+        col = startc;
+      }
+    }
   }
 }
 
