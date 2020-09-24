@@ -16,9 +16,12 @@ class Cell {
     }
   }
 
+// N NW NE, S SW SE, W, E
+
   set_neighbors(wrap=false) {
     const w = this.world.width -1;
     const h = this.world.height -1;
+    this.neighbors = [];
     if (this.row > 0) { // not in top row, so has neighbors on top
       this.neighbors.push(this.world.get_cell(this.row-1,this.column)); // N
       if (this.column > 0) { //body, not in col 0
@@ -129,6 +132,7 @@ class World {
   }
 
   fill() {
+    this.cells = [];
     for (let h=0;h<this.height;h++) {
       let row = [];
       for (let w=0;w<this.width;w++) {
@@ -136,6 +140,10 @@ class World {
       }
       this.cells.push(row);
     }
+    this.set_neighbors();
+  }
+
+  set_neighbors() {
     for (let r=0;r<this.height;r++) {
       for (let c=0;c<this.width;c++) {
         this.cells[r][c].set_neighbors(this.wrap);
@@ -143,8 +151,15 @@ class World {
     }
   }
 
+  wrapIt(wrap) {
+    this.wrap = wrap;
+    // this.reset();
+    // this.fill();
+    this.set_neighbors();
+  }
+
   resize(height,width) {
-    this.cells = [];
+    // this.cells = [];
     this.height = height;
     this.width = width;
     this.generation = 0;

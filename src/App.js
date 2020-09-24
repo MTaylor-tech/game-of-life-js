@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './newapp.css';
 import {World} from './classes/Cell.js';
-import {info} from './info.js';
+import Info from './info.jsx';
 import {p,s} from './presets.js';
 
 function App() {
@@ -18,33 +18,12 @@ function App() {
   const [cellClass, setCellClass] = useState('cell height2 width2');
   const [overlayClass, setOverlayClass] = useState('cell-overlay transition500');
   const [aliveClass, setAliveClass] = useState('cell-overlay transition500 alive');
-  const [generationA, setGenerationA] = useState(0);
-  const [generationB, setGenerationB] = useState(0);
-  const [genAClass, setGenAClass] = useState('visible transition500');
-  const [genBClass, setGenBClass] = useState('gen-b hidden transition500');
 
   useEffect(()=>{
     if (world) {
       setRows(world.cells);
     }
-  },[])
-
-  const switchGen = (num=1) => {
-    if (num===0) {
-      setGenerationA(0);
-      setGenerationB(0);
-      return;
-    }
-    if (generationA > generationB) {
-      setGenerationB(world.generation);
-      setGenAClass(`hidden transition${speed}`);
-      setGenBClass(`gen-b visible transition${speed}`);
-    } else {
-      setGenerationA(world.generation);
-      setGenAClass(`visible transition${speed}`);
-      setGenBClass(`gen-b hidden transition${speed}`);
-    }
-  }
+  },[world])
 
   useEffect(()=>{
     let cc = `cell height${size} width${size}`;
@@ -62,22 +41,18 @@ function App() {
     setMessage(1);
     world.randomize();
     setRef(ref+1);
-    switchGen(0);
   }
 
   const step = () => {
     world.run(1);
     setRef(ref+1);
-    switchGen();
     if (!world.anyLiving || !world.didChange) {
       setIsActive(false);
     }
   }
 
   const edges = () => {
-    world.wrap = !world.wrap;
-    world.fill();
-    reset();
+    world.wrapIt(!world.wrap);
     setRef(ref+1);
   }
 
@@ -96,7 +71,6 @@ function App() {
     setIsActive(false);
     setSeconds(0);
     world.reset();
-    switchGen(0);
     setRef(0);
   }
 
@@ -111,7 +85,7 @@ function App() {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [isActive, seconds, step, speed]);
+  }, [isActive, seconds, speed]);
 
   const toggle = () => {
     if (message>1) {
@@ -127,7 +101,6 @@ function App() {
     world.resize(height,width);
     setRef(0);
     setRows(world.cells);
-    switchGen(0);
   }
 
   const flip = (row,col) => {
@@ -153,12 +126,12 @@ function App() {
     <div className="container">
     <div className="App">
         <h1 className="title stronger">Conway's Game of Life</h1>
-        {showInfo?<div className="label" onClick={()=>setShowInfo(false)}>See information below.</div>:<div className="label active" onClick={()=>setShowInfo(true)}>What is this? <i className="far fa-question-circle" /></div>}
-        {message===0?<div className="label-box" onClick={()=>setMessage(1)}><span className="label active">Click the cells to set their status or press the Randomize <i className="fas fa-random" /> button below.</span></div>:<></>}
+        {false?<div className="label" onClick={()=>setShowInfo(false)}>See information below.</div>:<div className="label active" onClick={()=>setShowInfo(true)}>What is this? <i className="far fa-question-circle" /></div>}
+        {message===0?<div className="label-box" onClick={()=>setMessage(1)}><span className="label active">Click the cells to set their status or press the Randomize <i className="fas fa-random" /> button below, or <span onClick={()=>setShowInfo(true)}>check out the information and instructions below</span>.</span></div>:<></>}
         {message===1?<div className="label-box"><span className="active">Click the cells to change their status.<br />Press the Play <i className="fas fa-play" /> button below when you're ready to watch your world develop.</span></div>:<></>}
         {message>1?<div className="label-box" />:<></>}
         <div className="button-box embiggen">
-          <i className={message===0?"fas fa-random active":"fas fa-random inactive embiggen"} onClick={random} title="Randomize" />
+          <i className={message===0?"fas fa-random active embiggen":"fas fa-random inactive embiggen"} onClick={random} title="Randomize" />
           <i className="fas fa-undo inactive embiggen" onClick={reset} title="Reset" />
           {isActive?<i className="fas fa-pause active embiggen" onClick={toggle} title="Pause" />:message===0?<i className="fas fa-play inactive embiggen" onClick={toggle} title="Play" />:<i className="fas fa-play active embiggen" onClick={toggle} title="Play" />}
           <i className="fas fa-step-forward inactive embiggen" onClick={step} title="Step Forward" />
@@ -187,21 +160,20 @@ function App() {
           <span className="divider" />
           <i className={size===4?"fas fa-expand active":"fas fa-expand inactive"} onClick={()=>resize(50,50,4)}> <span className="orbit">50x50</span></i>
         </div>
-        {/* <div className="button-box embiggen">
+        <div className="button-box embiggen">
           <span className="orbit active strong">Edges: </span>
           <span className="divider" />
           <span className={world.wrap?"orbit active":"orbit inactive"} onClick={edges}>Wrap</span>
           <span className="divider" />
           <span className={world.wrap?"orbit inactive":"orbit active"} onClick={edges}>Solid</span>
-        </div> */}
+        </div>
 
         <div className="board">{rows.map(row=>{
-          return <div key={Math.random()*1500} className={cellRowClass}>{row.map(cell=><div key={`${cell.row}-${cell.column}`} className={cellClass} onClick={()=>flip(cell.row,cell.column)}><div className={cell.alive?aliveClass:overlayClass} /></div>)}</div>
+          return <div key={row[0].row} className={cellRowClass}>{row.map(cell=><div key={`${cell.row}-${cell.column}`} className={cellClass} onClick={()=>flip(cell.row,cell.column)}><div className={cell.alive?aliveClass:overlayClass} /></div>)}</div>
         })}</div>
 
-
-        <div className="orbit active strong embiggen">Generation: <span className={genAClass}>{generationA}</span><span className={genBClass}>{generationB}</span></div>
-        <div className="label info-box">{showInfo?<div dangerouslySetInnerHTML={{__html: info}}></div>:<></>}</div>
+        <div className="orbit active strong embiggen">Generation: {world.generation}</div>
+        {showInfo?<Info />:<Info />}
         <span className="divider" id="infoBox" />
     </div>
   </div>

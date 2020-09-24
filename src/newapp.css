@@ -4,6 +4,7 @@ html. body {
 
 .container {
   width: 100%;
+  color: #dddddd;
   background: rgb(0,5,212);
   background: -moz-linear-gradient(90deg, rgba(0,5,212,0.6963861158915928) 9%, rgba(36,28,162,0.7633504016058785) 35%, rgba(7,12,75,0.8079932587487357) 100%);
   background: -webkit-linear-gradient(90deg, rgba(0,5,212,0.6963861158915928) 9%, rgba(36,28,162,0.7633504016058785) 35%, rgba(7,12,75,0.8079932587487357) 100%);
