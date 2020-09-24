@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './newapp.css';
 import {World} from './classes/Cell.js';
 import {info} from './info.js';
-import {p} from './presets.js';
+import {p,s} from './presets.js';
 
 function App() {
   const [world, setWorld] = useState(new World(25,25));
@@ -74,8 +74,15 @@ function App() {
     }
   }
 
+  const edges = () => {
+    world.wrap = !world.wrap;
+    world.fill();
+    reset();
+    setRef(ref+1);
+  }
+
   const preset = () => {
-    world.preset(p[0],size*5,size*5);
+    world.preset(p[2],s(size,10),s(size,10));
     setRef(ref+1);
   }
 
@@ -156,7 +163,7 @@ function App() {
           {isActive?<i className="fas fa-pause active embiggen" onClick={toggle} title="Pause" />:message===0?<i className="fas fa-play inactive embiggen" onClick={toggle} title="Play" />:<i className="fas fa-play active embiggen" onClick={toggle} title="Play" />}
           <i className="fas fa-step-forward inactive embiggen" onClick={step} title="Step Forward" />
           <i className="fas fa-fast-forward inactive embiggen" onClick={jump} title="Jump Forward" />
-          <i className="fas fa-th inactive embiggen" onClick={preset} title="Preset" />
+          {/* <i className="fas fa-th inactive embiggen" onClick={preset} title="Preset" /> */}
         </div>
         <div className="button-box embiggen">
           <span className="orbit strong active">Speed: </span>
@@ -180,7 +187,13 @@ function App() {
           <span className="divider" />
           <i className={size===4?"fas fa-expand active":"fas fa-expand inactive"} onClick={()=>resize(50,50,4)}> <span className="orbit">50x50</span></i>
         </div>
-
+        {/* <div className="button-box embiggen">
+          <span className="orbit active strong">Edges: </span>
+          <span className="divider" />
+          <span className={world.wrap?"orbit active":"orbit inactive"} onClick={edges}>Wrap</span>
+          <span className="divider" />
+          <span className={world.wrap?"orbit inactive":"orbit active"} onClick={edges}>Solid</span>
+        </div> */}
 
         <div className="board">{rows.map(row=>{
           return <div key={Math.random()*1500} className={cellRowClass}>{row.map(cell=><div key={`${cell.row}-${cell.column}`} className={cellClass} onClick={()=>flip(cell.row,cell.column)}><div className={cell.alive?aliveClass:overlayClass} /></div>)}</div>

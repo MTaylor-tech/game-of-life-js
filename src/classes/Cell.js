@@ -16,30 +16,68 @@ class Cell {
     }
   }
 
-  set_neighbors() {
+  set_neighbors(wrap=false) {
+    const w = this.world.width -1;
+    const h = this.world.height -1;
     if (this.row > 0) { // not in top row, so has neighbors on top
-      this.neighbors.push(this.world.get_cell(this.row-1,this.column))
-      if (this.column > 0) {
-        this.neighbors.push(this.world.get_cell(this.row-1,this.column-1))
+      this.neighbors.push(this.world.get_cell(this.row-1,this.column)); // N
+      if (this.column > 0) { //body, not in col 0
+        this.neighbors.push(this.world.get_cell(this.row-1,this.column-1)); // NW
+      } else if (wrap) {
+        this.neighbors.push(this.world.get_cell(this.row-1,w));
       }
-      if (this.column < this.world.width-1) {
-        this.neighbors.push(this.world.get_cell(this.row-1,this.column+1))
+      if (this.column < w) {
+        this.neighbors.push(this.world.get_cell(this.row-1,this.column+1)) //NE
+      } else if (wrap) {
+        this.neighbors.push(this.world.get_cell(this.row-1,0));
+      }
+    } else if (wrap) {
+      this.neighbors.push(this.world.get_cell(h,this.column)); //N around
+      if (this.column > 0) {
+        this.neighbors.push(this.world.get_cell(h,this.column-1)); //NW wrap
+      } else {
+        this.neighbors.push(this.world.get_cell(h,w));
+      }
+      if (this.column < w) {
+        this.neighbors.push(this.world.get_cell(h,this.column+1));
+      } else {
+        this.neighbors.push(this.world.get_cell(h,0));
       }
     }
-    if (this.row < this.world.height-1) { // not in bottom row
+    if (this.row < h) { // not in bottom row
       this.neighbors.push(this.world.get_cell(this.row+1,this.column))
       if (this.column > 0) {
         this.neighbors.push(this.world.get_cell(this.row+1,this.column-1))
+      } else if (wrap) {
+        this.neighbors.push(this.world.get_cell(this.row+1,w));
       }
-      if (this.column < this.world.width-1) {
+      if (this.column < w) {
         this.neighbors.push(this.world.get_cell(this.row+1,this.column+1))
+      } else if (wrap) {
+        this.neighbors.push(this.world.get_cell(this.row+1,0));
+      }
+    } else if (wrap) {
+      this.neighbors.push(this.world.get_cell(0,this.column));
+      if (this.column > 0) {
+        this.neighbors.push(this.world.get_cell(0,this.column-1));
+      } else {
+        this.neighbors.push(this.world.get_cell(0,w));
+      }
+      if (this.column < w) {
+        this.neighbors.push(this.world.get_cell(0,this.column+1));
+      } else {
+        this.neighbors.push(this.world.get_cell(0,0));
       }
     }
     if (this.column > 0) { // not in left-most column
       this.neighbors.push(this.world.get_cell(this.row,this.column-1))
+    } else if (wrap) {
+      this.neighbors.push(this.world.get_cell(this.row,w));
     }
-    if (this.column < this.world.width-1) {
+    if (this.column < w) { //not in right-most column
       this.neighbors.push(this.world.get_cell(this.row,this.column+1))
+    } else if (wrap) {
+      this.neighbors.push(this.world.get_cell(this.row,0));
     }
   }
 
@@ -87,6 +125,7 @@ class World {
     this.fill();
     this.anyLiving = false;
     this.didChange = false;
+    this.wrap = false;
   }
 
   fill() {
@@ -99,7 +138,7 @@ class World {
     }
     for (let r=0;r<this.height;r++) {
       for (let c=0;c<this.width;c++) {
-        this.cells[r][c].set_neighbors();
+        this.cells[r][c].set_neighbors(this.wrap);
       }
     }
   }
@@ -185,13 +224,14 @@ class World {
   }
 
   preset(p,row,col) {
+    this.reset();
     const startc = col;
     console.log(`preset('${p}',${row},${col})`);
     for (let i=0; i<p.length; i++) {
       const ch = p.charAt(i);
       console.log(`charAt(${i})===${ch}`);
       if (ch==='X') {
-        this.cells[row][col].alive=true;
+        this.cells[row][col].flip();
         col++;
       } else if (ch==='O') {
         col++;
