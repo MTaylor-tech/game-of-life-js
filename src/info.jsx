@@ -19,7 +19,7 @@ function Info(props) {
         <li>Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.</li>
       </ul>
       <div className="divider" />
-      <h2 className='strong active orbit'>The Controls</h2>
+      <h2 className='strong active orbit' id="infoBox">The Controls</h2>
       <p className='label'>Clicking a square will turn that square from dead to alive or alive to dead.</p>
       <p className='label'><i className="fas fa-random" /> The Randomizer will give you a random pattern.</p>
       <p className='label'><i className="fas fa-undo" /> The Reset button will clear the board.</p>

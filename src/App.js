@@ -85,7 +85,7 @@ function App() {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [isActive, seconds, speed]);
+  }, [isActive, seconds, speed, step]);
 
   const toggle = () => {
     if (message>1) {
@@ -174,7 +174,6 @@ function App() {
 
         <div className="orbit active strong embiggen">Generation: {world.generation}</div>
         {showInfo?<Info />:<Info />}
-        <span className="divider" id="infoBox" />
     </div>
   </div>
   );
